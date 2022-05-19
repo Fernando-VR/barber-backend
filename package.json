@@ -1,0 +1,25 @@
+{
+  "name": "api-rest",
+  "version": "1.0.0",
+  "description": "api-rest using express and mongoDB",
+  "main": "index.js",
+  "scripts": {
+    "dev": "DEBUG=app:* nodemon index.js"
+  },
+  "keywords": [],
+  "author": "EquipoScrum",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.0",
+    "excel4node": "^1.7.2",
+    "express": "^4.17.3",
+    "http-errors": "^2.0.0",
+    "joi": "^17.6.0",
+    "mongoose": "^6.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
