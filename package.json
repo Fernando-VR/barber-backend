@@ -4,7 +4,8 @@
   "description": "api-rest using express and mongoDB",
   "main": "index.js",
   "scripts": {
-    "dev": "DEBUG=app:* nodemon index.js"
+    "dev": "DEBUG=app:* nodemon index.js",
+    "windows": "set DEBUG=app:* && nodemon index.js"
   },
   "keywords": [],
   "author": "EquipoScrum",
