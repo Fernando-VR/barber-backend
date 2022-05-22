@@ -8,6 +8,7 @@ const { AdminAPI } = require('./src/admin/index');
 const { IndexAPI, NotFoundAPI } = require('./src/index/index');
 const { ProductAPI } = require('./src/product');
 const { ReviewAPI } = require('./src/review');
+const { AppointmentAPI } = require('./src/appointment');
 
 const app = express();
 
@@ -20,6 +21,7 @@ ConnectionDb(app);
 AdminAPI(app);
 ProductAPI(app);
 ReviewAPI(app);
+AppointmentAPI(app);
 
 NotFoundAPI(app);
 
