@@ -4,7 +4,9 @@ const Joi = require('joi');
 
 const schema = Joi.object({
     image: Joi.string()
-            .required()
+            .required(),
+    description: Joi.string()
+                    .required()
 });
 
 const getAll = async ( admin ) => {
@@ -26,6 +28,7 @@ const getById = async ( id, admin_id ) => {
 const create = async (id, body) => {
     let image = new Image({
         image: body.image,
+        description: body.description
     });
     image.admin = id;
     return await image.save();

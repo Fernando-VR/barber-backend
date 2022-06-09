@@ -5,6 +5,10 @@ const imageSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    description:{
+        type: String,
+        rerquired: true
+    },
     admin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Admin"

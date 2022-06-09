@@ -30,8 +30,8 @@ module.exports.ImageController = {
     },
     createImage: (req, res) => {
         let { body } = req;
-        let { image } = body;
-        const { error, value } = ImageService.schema.validate( { image } );
+        let { image, description } = body;
+        const { error, value } = ImageService.schema.validate( { image, description } );
         if ( !error ) {
             let result = ImageService.create( req.admin._id, value );
             result
