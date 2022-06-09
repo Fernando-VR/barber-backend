@@ -16,6 +16,18 @@ module.exports.ImageController = {
                 Response.error(res);
             })
     },
+    getImagesUser: (req, res) => {
+        const { params: { name }} = req;
+        let result = ImageService.getAllUser( name );
+        result
+            .then( images => {
+                Response.success(res, 200, 'Images list', images);
+            })
+            .catch ( error => {
+                debug(error);
+                Response.error(res);
+            })
+    },
     getImage: (req, res) => {
         const { params: { id }} = req;
         let result = ImageService.getById( id, req.admin._id.toString() );

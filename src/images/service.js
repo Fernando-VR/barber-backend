@@ -1,4 +1,5 @@
 const Image = require('../models/images_model');
+const Admin = require('../models/admin_model');
 const createError = require('http-errors');
 const Joi = require('joi');
 
@@ -11,6 +12,12 @@ const schema = Joi.object({
 
 const getAll = async ( admin ) => {
     let images = await Image.find().where("admin").equals(admin);
+    return images;
+};
+
+const getAllUser = async ( name ) => {
+    let admin = await Admin.findOne( { name } );
+    let images = await Image.find({ "admin" : admin._id });
     return images;
 };
 
@@ -48,6 +55,7 @@ const deleteR = async ( id, admin_id ) => {
 
 module.exports.ImageService = {
     getAll,
+    getAllUser,
     getById,
     create,
     deleteR,

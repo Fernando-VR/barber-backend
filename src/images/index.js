@@ -7,6 +7,7 @@ const router = express.Router();
 module.exports.ImagesAPI = (app) => {
     router
         .get('/', checkAuth, ImageController.getImages)
+        .get('/users/:name', ImageController.getImagesUser)
         .get('/:id', checkAuth, ImageController.getImage)
         .post('/', checkAuth, ImageController.createImage)
         .delete("/:id", checkAuth, ImageController.deleteImage);
