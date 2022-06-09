@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema({
     image:{
         type: String,
         required: true
+    },
+    admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Admin"
     }
 });
 

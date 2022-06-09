@@ -1,5 +1,6 @@
 const Admin = require('../models/admin_model');
 const Joi = require('joi');
+const createError = require('http-errors');
 
 const schema = Joi.object({
     name: Joi.string()
@@ -30,7 +31,19 @@ const getById = async (id) => {
     return admin;
 }
 
+const getByEmail = async (email) => {
+    let admin = await Admin.findOne( { email });
+    if ( !admin ){
+        throw new createError(400, `User doesn't exist`);
+    }
+    return admin;
+}
+
 const create = async (body) => {
+    const repeatedAdmin = await Admin.findOne({ "email": body.email });
+    if(repeatedAdmin){
+        throw new createError(400, `Email already registered`);
+    }
     let admin = new Admin({
         name: body.name,
         lastName: body.lastName,
@@ -42,16 +55,22 @@ const create = async (body) => {
 }
 
 const update = async (id, {name, lastName, email, password, image} ) => {
-    let admin = await Admin.findOneAndUpdate( { "_id" : id }, {
-        $set: {
-            "name": name,
-            "lastName": lastName,
-            "email": email,
-            "password": password,
-            "image": image
-        }
-    }, {new: true});
-    return admin;
+    const admin = await Admin.findById(id);
+    if(!admin){
+        throw new createError(400, `Not found`);
+    }
+    if(admin.email !== email){
+        const repeatEmail = await Admin.findOne({email})
+        if(repeatEmail)
+            throw new createError(400, `Email already registered`);
+    }
+    admin.name = name;
+    admin.lastName = lastName;
+    admin.email = email;
+    admin.password = password;
+    admin.image = image;
+    const newAdmin = await admin.save();
+    return newAdmin;
 }
 
 const deleteA = async (id) => {
@@ -62,6 +81,7 @@ const deleteA = async (id) => {
 module.exports.AdminService = {
     getAll,
     getById,
+    getByEmail,
     create,
     update,
     deleteA,

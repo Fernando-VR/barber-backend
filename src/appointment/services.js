@@ -1,4 +1,6 @@
 const Appointment = require('../models/appointment_model');
+const Admin = require('../models/admin_model');
+const createError = require('http-errors');
 const Joi = require('joi');
 
 const schema = Joi.object({
@@ -18,17 +20,23 @@ const schema = Joi.object({
             .required(),
 });
 
-const getAll = async () => {
-    let appointments = await Appointment.find()
+const getAll = async (admin) => {
+    const appointments = await Appointment.find().where("admin").equals(admin);
     return appointments;
 };
 
-const getById = async (id) => {
-    let appointment = await Appointment.find( { "_id": id} );
+const getById = async (id, admin_id) => {
+    let appointment = await Appointment.findById(id);
+    if (!appointment){
+        throw new createError(400, `Not found`);
+    }
+    if( appointment.admin._id.toString() !== admin_id){
+        throw new createError(400, `Invalid action`);
+    }
     return appointment;
 }
 
-const create = async (body) => {
+const create = async (id, body) => {
     let appointment = new Appointment({
         name: body.name,
         phone: body.phone,
@@ -36,31 +44,57 @@ const create = async (body) => {
         date: body.date,
         time: body.time
     });
+    appointment.admin = id;
     return await appointment.save();
 }
 
-const update = async (id, {name, phone, service, date, time} ) => {
-    let appointment = await Appointment.findOneAndUpdate( { "_id" : id }, {
-        $set: {
-            "name": name,
-            "phone": phone,
-            "service": service,
-            "date": date,
-            "time": time
-        }
-    }, {new: true});
-    return appointment;
+const createUser = async (name, body) => {
+    let admin = await Admin.findOne( { name } );
+    let appointment = new Appointment({
+        name: body.name,
+        phone: body.phone,
+        service: body.service,
+        date: body.date,
+        time: body.time
+    });
+    appointment.admin = admin._id;
+    return await appointment.save();
 }
 
-const deleteA = async (id) => {
-    let appointment = await Appointment.findOneAndDelete( { "_id" : id});
-    return appointment;
+const update = async (id, {name, phone, service, date, time}, admin_id ) => {
+    const appointment = await Appointment.findById(id);
+    if (!appointment){
+        throw new createError(400, `Not found`);
+    }
+    if( appointment.admin._id.toString() !== admin_id){
+        throw new createError(400, `Invalid action`);
+    }
+    appointment.name = name || appointment.name;
+    appointment.phone = phone || appointment.phone;
+    appointment.service = service || appointment.service;
+    appointment.date = date || appointment.date;
+    appointment.time = time || appointment.time;
+    const newAppointment = await appointment.save();
+    return newAppointment;
+}
+
+const deleteA = async (id, admin_id) => {
+    const appointment = await Appointment.findById(id);
+    if (!appointment){
+        throw new createError(400, `Not found`);
+    }
+    if( appointment.admin._id.toString() !== admin_id){
+        throw new createError(400, `Invalid action`);
+    }
+    const deletedAppointment = await Appointment.findOneAndDelete( { "_id" : id});
+    return deletedAppointment;
 };
 
 module.exports.AppointmentService = {
     getAll,
     getById,
     create,
+    createUser,
     update,
     deleteA,
     schema

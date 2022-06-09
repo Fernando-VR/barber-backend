@@ -8,7 +8,19 @@ const { create } = require('../models/admin_model');
 
 module.exports.ProductController = {
     getProducts: (req, res) => {
-        let products = ProductService.getAll();
+        let products = ProductService.getAll( req.admin );
+        products
+            .then( products => {
+                Response.success(res, 200, 'Products list', products);
+            })
+            .catch ( error => {
+                debug(error);
+                Response.error(res);
+            })
+    },
+    getProductsUser: (req, res) => {
+        const { params : {name} } = req;
+        let products = ProductService.getAllUser( name );
         products
             .then( products => {
                 Response.success(res, 200, 'Products list', products);
@@ -20,14 +32,14 @@ module.exports.ProductController = {
     },
     getProduct: async (req, res) => {
         const { params: { id }} = req
-        let product = ProductService.getById( id );
+        let product = ProductService.getById( id, req.admin._id.toString() );
         product
             .then( product => {
                 Response.success(res, 200, 'Product', product);
             })
             .catch ( error => {
                 debug(error);
-                Response.error(res);
+                Response.error(res, error);
             })
     },
     createProduct: (req, res) => {
@@ -41,7 +53,7 @@ module.exports.ProductController = {
             image: image
         });
         if ( !error ) {
-            let newProduct = ProductService.create(body);
+            let newProduct = ProductService.create(req.admin._id, value);
             newProduct
                 .then( product => {
                     Response.success(res, 201, `Product added`, product);
@@ -69,7 +81,7 @@ module.exports.ProductController = {
             image: image
         });
         if ( !error ){
-            let product = ProductService.update(id, value);
+            let product = ProductService.update(id, value, req.admin._id.toString() );
             product
                 .then( product => {
                     Response.success(res, 200, `Product modified`, product);
@@ -77,7 +89,7 @@ module.exports.ProductController = {
                 })
                 .catch( error  => {
                     debug(error);
-                    Response.error(res);
+                    Response.error(res, error);
                 });
         }
         else {
@@ -88,7 +100,7 @@ module.exports.ProductController = {
     },
     deleteProduct: async (req, res) => {
         const { params: {id} } = req;
-        const deleted = ProductService.deleteP(id);
+        const deleted = ProductService.deleteP(id, req.admin._id.toString() );
         deleted
             .then( product => {
                 if ( !product )

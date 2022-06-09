@@ -1,8 +1,10 @@
 const createError = require('http-errors');
 const debug = require('debug')('app:module-admin-controller');
+const Admin = require('../models/admin_model');
 
 const { AdminService } = require('./services');
 const { Response } = require('../common/response');
+const generateJWT = require('../helpers/generateJWT');
 // const { schema } = require('../models/admin_model');
 
 module.exports.AdminController = {
@@ -47,7 +49,7 @@ module.exports.AdminController = {
                 })
                 .catch (error => {
                     debug(error);
-                    Response.error(res);
+                    Response.error(res, error);
                 });
         }
         else {
@@ -75,7 +77,7 @@ module.exports.AdminController = {
                 })
                 .catch( error  => {
                     debug(error);
-                    Response.error(res);
+                    Response.error(res, error);
                 });
         }
         else {
@@ -98,5 +100,33 @@ module.exports.AdminController = {
                 debug(error);
                 Response.error(res);
             });
+    },
+    authentication: async (req, res) => {
+        const { email, password } = req.body;
+        try {
+            const admin = await AdminService.getByEmail(email);
+            if( await admin.checkPassword(password) ){
+                res.json({
+                    body: {
+                        _id: admin._id,
+                        name: admin.name,
+                        email: admin.email,
+                        token: generateJWT(admin.id)
+                    }
+                })
+            }
+            else {
+                const error = new Error('Invalid Password');
+                return res.status(403).json({ msg: error.message });
+            } 
+        } catch (error) {
+            debug(error);
+            Response.error(res, error);
+        }
+        
+    },
+    profile: (req, res) => {
+        const { admin } = req;
+        res.json(admin);
     }
 }

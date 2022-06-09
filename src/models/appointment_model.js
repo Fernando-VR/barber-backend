@@ -20,6 +20,10 @@ const appointmentSchema = new mongoose.Schema({
     time:{
         type: String,
         required: true
+    },
+    admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Admin"
     }
 });
 
