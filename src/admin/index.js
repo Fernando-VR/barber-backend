@@ -13,6 +13,7 @@ module.exports.AdminAPI = (app) => {
         .delete("/:id", AdminController.deleteAdmin)
         .post('/login', AdminController.authentication)
         .get('/profile', checkAuth, AdminController.profile)
+        .get('/verify/:name', AdminController.verifyAdmin)
         .put('/profile/:id', checkAuth, AdminController.updateAdmin)
     app.use('/api/admins', router);
 }

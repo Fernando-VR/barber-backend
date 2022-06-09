@@ -31,6 +31,11 @@ const getById = async (id) => {
     return admin;
 }
 
+const getByName = async ( name ) => {
+    let admin = Admin.findOne( { "name" : name } );
+    return admin;
+}
+
 const getByEmail = async (email) => {
     let admin = await Admin.findOne( { email });
     if ( !admin ){
@@ -81,6 +86,7 @@ const deleteA = async (id) => {
 module.exports.AdminService = {
     getAll,
     getById,
+    getByName,
     getByEmail,
     create,
     update,

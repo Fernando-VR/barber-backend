@@ -31,6 +31,18 @@ module.exports.AdminController = {
                 Response.error(res);
             })
     },
+    verifyAdmin: async (req, res) => {
+        const { params: { name }} = req
+        let admin = AdminService.getByName( name );
+        admin
+            .then( admin => {
+                Response.success(res, 200, 'Admin', admin);
+            })
+            .catch ( error => {
+                debug(error);
+                Response.error(res);
+            })
+    },
     createAdmin: (req, res) => {
         let { body } = req;
         let { name, lastName, email, password, image } = body;
